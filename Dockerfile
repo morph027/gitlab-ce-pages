@@ -22,6 +22,9 @@ COPY src/package.json ${GITLAB_CE_PAGES_WEBHOOK_DIR}/
 RUN npm install
 RUN npm install -g nodemon
 
+RUN apt-get install --no-install-recommends -y dnsmasq-base \
+    && mkdir -p /etc/dnsmasq.d
+
 COPY entrypoint.sh /
 COPY config/nginx.conf /etc/nginx/nginx.conf
 RUN rm -f /etc/nginx/conf.d/*
@@ -29,6 +32,7 @@ RUN rm -f /etc/nginx/conf.d/*
 COPY src/ ${GITLAB_CE_PAGES_WEBHOOK_DIR}/
 
 EXPOSE 80/tcp
+EXPOSE 53/udp
 
 VOLUME ["${GITLAB_CE_PAGES_PUBLIC_DIR}"]
 VOLUME ["${GITLAB_CE_PAGES_CNAME_DIR}"]

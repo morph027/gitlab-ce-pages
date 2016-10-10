@@ -82,13 +82,41 @@ Following are steps to set CNAME:
    Each line sets domains for a project. Pointing multiple domains to one project is supported.
  * Set your domains’ *A record* to GCP server IP and all settled.
 
+#### Dynamic DNS server
+
+CNAME is supported since **GCP 1.2.2**.
+
+Adding **A records** for each pages domain might drive you wild, if you have many users picking up new features like this. But you can provide a generic internal domain for pages (even provide a fake internal ```gitlab.io```) for all subdomains. Just let your existing DNS server forward all requests for ```gitlab.io``` to your **GCP** server and it will resolve to ```PUBLIC_IP``` for all local pages and further forward all unknown pages to upstream DNS servers (:exclamation: Do not build loops by again forwarding to the server which was asking **GCP**).
+
+It will take care of all domain names set in ```/srv/gitlab-ce-pages/cname/cnames.txt```. So for fake internal ```gitlab.io``` domain:
+
+```
+ workspace_1/project_1 project1.gitlab.io
+```
+
+You need to run your container in privileged mode (dnsmasq wants to drop priviliges after startup), expose udp port 53 and add another environment variable called ```PUBLIC_IP```, which is the ip address of your docker host:
+
+ ```
+  docker run --name gitlab-ce-pages -d --restart=always \
+      --env 'PAGE_PRIVATE_TOKEN=private_token_of_peeking_account' \
+      --env 'GITLAB_URL=http://gitlab.example.com/' \
+      --env 'PROJECT_ROOT=public' \
+      --env 'PUBLIC_IP=x.x.x.x' \
+      --volume /srv/gitlab-ce-pages/public:/home/pages/public/ \
+      --volume /srv/gitlab-ce-pages/cname:/home/pages/cname/ \
+      --privileged \
+      -p 80:80 \
+      -p 53:53/udp
+      yums/gitlab-ce-pages:1.2.2
+ ```
+
 ## Upgrading
 You can easily upgrade your GCP in following steps:
 
  * pull latest image
 
  ```
-  docker pull yums/gitlab-ce-pages:1.2.1
+  docker pull yums/gitlab-ce-pages:1.2.2
  ```
  
  * remove running image
@@ -107,16 +135,15 @@ You can easily upgrade your GCP in following steps:
       --volume /srv/gitlab-ce-pages/public:/home/pages/public/ \
       --volume /srv/gitlab-ce-pages/cname:/home/pages/cname/ \
       -p 80:80 \
-      yums/gitlab-ce-pages:1.2.1
+      yums/gitlab-ce-pages:1.2.2
  ```
 
 ## Environment variables
 * **PAGE_PRIVATE_TOKEN**: private token of peeking account
 * **GITLAB_URL**: GitLab CE URL
-* **RELATIVE_URL**: relative URL of **GCP**, with this you can deploy **GCP** under existing domains with some proxy forwarding.
-This variable should looks like `pages`, without prefix or trailing splashes.
-* **PROJECT_ROOT**: root directory of decompressed artifacts file. If set, files inside of **PROJECT_ROOT** directory will be taken out.
-This variable should looks like `public`, without prefix or trailing splashes. Note that in GitLab's official examples, artifacts are put inside `public` folder and then packed into artifacts.
+* **RELATIVE_URL**: relative URL of **GCP**, with this you can deploy **GCP** under existing domains with some proxy forwarding. This variable should looks like `pages`, without prefix or trailing splashes.
+* **PROJECT_ROOT**: root directory of decompressed artifacts file. If set, files inside of **PROJECT_ROOT** directory will be taken out. This variable should looks like `public`, without prefix or trailing splashes. Note that in GitLab's official examples, artifacts are put inside `public` folder and then packed into artifacts.
+* **PUBLIC_IP**: ip address of your Docker host to act as DNS server for internal gitlab pages domain.
 
 
 ## Sample `docker-compose.yml`
