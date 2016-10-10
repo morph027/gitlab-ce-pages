@@ -94,7 +94,7 @@ It will take care of all domain names set in ```/srv/gitlab-ce-pages/cname/cname
  workspace_1/project_1 project1.gitlab.io
 ```
 
-You need to run your container in privileged mode (dnsmasq wants to drop priviliges after startup), expose udp port 53 and add another environment variable called ```PUBLIC_IP```, which is the ip address of your docker host:
+You need to run your container with ```--cap-add=NET_ADMIN``` for dnsmasq, expose udp port 53 and add another environment variable called ```PUBLIC_IP```, which is the ip address of your docker host:
 
  ```
   docker run --name gitlab-ce-pages -d --restart=always \
@@ -104,7 +104,7 @@ You need to run your container in privileged mode (dnsmasq wants to drop privili
       --env 'PUBLIC_IP=x.x.x.x' \
       --volume /srv/gitlab-ce-pages/public:/home/pages/public/ \
       --volume /srv/gitlab-ce-pages/cname:/home/pages/cname/ \
-      --privileged \
+      --cap-add=NET_ADMIN \
       -p 80:80 \
       -p 53:53/udp
       yums/gitlab-ce-pages:1.2.2
