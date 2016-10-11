@@ -23,6 +23,7 @@ RUN npm install
 
 RUN apt-get install --no-install-recommends -y dnsmasq-base \
     && mkdir -p /etc/dnsmasq.d
+COPY config/dnsmasq.conf /etc/dnsmasq.d/dnsmasq.conf
 
 ENV TINI_VERSION v0.10.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini

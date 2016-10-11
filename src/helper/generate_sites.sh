@@ -41,6 +41,6 @@ _dnsmasq_config() {
 
 echo "cleaning sites config"
 find /etc/nginx/conf.d/ -type f -delete
-find /etc/dnsmasq.conf/ -type f -delete
+find /etc/dnsmasq.conf/ ! -name dnsmasq.conf -type f -delete
 _nginx_config "$1" "$2"
 [ ! -z $PUBLIC_IP ] && _dnsmasq_config "$2"
