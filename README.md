@@ -29,7 +29,7 @@ The only ~~supported~~ encouraged way to run **GCP** is with [Docker](https://ww
  * Get Docker image
 
  ```
-  docker pull yums/gitlab-ce-pages:1.2.2
+  docker pull yums/gitlab-ce-pages:1.2.3
  ```
  
  * Run Docker container with
@@ -41,7 +41,7 @@ The only ~~supported~~ encouraged way to run **GCP** is with [Docker](https://ww
       --env 'PROJECT_ROOT=public' \
       --volume /srv/gitlab-ce-pages/public:/home/pages/public/ \
       -p 80:80 \
-      yums/gitlab-ce-pages:1.2.2
+      yums/gitlab-ce-pages:1.2.3
  ```
  
  * Tell your GitLab users the URL of your **GCP** server. They will use it as **webhook URL**. Note that this URL is the one which can actually access your running Docker instance's exposed port.
@@ -55,7 +55,7 @@ The only ~~supported~~ encouraged way to run **GCP** is with [Docker](https://ww
 
 #### DNS configuration
 
-Changed in **1.2.2**! No need to manually edit text files.
+Changed in **1.2.3**! No need to manually edit text files.
 
 You can provide a generic internal domain for pages (even provide a fake internal ```gitlab.io```) for all subdomains. Just let your existing DNS server forward all requests for ```gitlab.io``` to your **GCP** server and it will resolve to ```PUBLIC_IP``` for all local pages and further forward all unknown pages to upstream DNS servers (:exclamation: Do not build loops by again forwarding to the server which was asking **GCP**).
 
@@ -73,7 +73,7 @@ You need to run your container with ```--cap-add=NET_ADMIN``` for dnsmasq, expos
       --cap-add=NET_ADMIN \
       -p 80:80 \
       -p 53:53/udp
-      yums/gitlab-ce-pages:1.2.2
+      yums/gitlab-ce-pages:1.2.3
  ```
 
 ## Upgrading
@@ -82,7 +82,7 @@ You can easily upgrade your GCP in following steps:
  * pull latest image
 
  ```
-  docker pull yums/gitlab-ce-pages:1.2.2
+  docker pull yums/gitlab-ce-pages:1.2.3
  ```
  
  * remove running image
@@ -100,7 +100,7 @@ You can easily upgrade your GCP in following steps:
       --env 'PROJECT_ROOT=public' \
       --volume /srv/gitlab-ce-pages/public:/home/pages/public/ \
       -p 80:80 \
-      yums/gitlab-ce-pages:1.2.2
+      yums/gitlab-ce-pages:1.2.3
  ```
 
 ## Environment variables
@@ -117,7 +117,7 @@ This is a sample `docker-compose.yml` file for you if you want to use docker-com
 
     gitlab-ce-pages:
       restart: always
-      image: yums/gitlab-ce-pages:1.2.2
+      image: yums/gitlab-ce-pages:1.2.3
       environment:
         - PAGE_PRIVATE_TOKEN=private_token_of_peeking_account
         - GITLAB_URL=http://gitlab.example.com/

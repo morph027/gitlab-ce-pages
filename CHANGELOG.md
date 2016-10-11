@@ -1,5 +1,8 @@
 # Changelog
 
+**1.2.3**
+- prevent dns loops
+
 **1.2.2**
 - add tini (https://github.com/krallin/tini) init system
 - deployeritself kicks of helper script
