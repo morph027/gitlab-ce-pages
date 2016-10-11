@@ -1,5 +1,10 @@
 # Changelog
 
+**1.2.2**
+- add tini (https://github.com/krallin/tini) init system
+- deployeritself kicks of helper script
+- get rid of zombies caused by nodemon
+
 **1.2.1**
 - solve child process’ stdout buffer overflow problem #8
 
