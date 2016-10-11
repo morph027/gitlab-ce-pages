@@ -16,7 +16,7 @@ const projectRoot = process.env.PROJECT_ROOT;
 let gitlabUrl = process.env.GITLAB_URL || 'localhost';
 gitlabUrl = gitlabUrl.replace(/\/*$/, '/');
 
-function extract(artifactName, artifactPath, tempDestination, destination) {
+function extract(artifactName, artifactPath, tempDestination, destination, body) {
   exec(`unzip ${artifactPath} -d ${tempDestination} >> /dev/null`, (err, stdout, stderr) => {
     if (err) {
       console.error('unzip', artifactName, 'failed');
@@ -54,6 +54,20 @@ function extract(artifactName, artifactPath, tempDestination, destination) {
                       console.error(err);
                     } else {
                       console.log('files moving out of', projectRoot, 'succeed');
+                    }
+                  }
+                );
+                var project_name_array = body.project_name.split(" / ");
+                var project_namespace = project_name_array[0];
+                var domainname = project_name_array[1];
+                console.log('setting up nginx + dnsmasq for ', domainname);
+                exec('$GITLAB_CE_PAGES_WEBHOOK_DIR/helper/generate_sites.sh ' + project_namespace + ' ' + domainname,
+                  (err, stdout, stderr) => {
+                    if (err) {
+                      console.error('generate_sites.sh helper', projectRoot, 'failed');
+                      console.error(err);
+                    } else {
+                      console.log('generate_sites.sh helper', projectRoot, 'succeed');
                     }
                   }
                 );
@@ -135,7 +149,7 @@ function update(body, pageDir) {
           console.error('mkdirp', tempDestination, 'to destination', destination, 'failed');
           console.error(err);
         }
-        extract(artifactName, artifactPath, tempDestination, pageDir);
+        extract(artifactName, artifactPath, tempDestination, pageDir, body);
       });
     });
     request
